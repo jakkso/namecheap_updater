@@ -1,7 +1,7 @@
 """
 Contains tests for Updater
 """
-from namecheap.new_updater import Updater
+from namecheap.updater import Updater
 
 
 def test_str() -> None:
