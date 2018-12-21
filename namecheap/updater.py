@@ -48,7 +48,7 @@ class Updater:
             """
             Initializer for logger's location, which is in $HOME/logs/namecheap-updater.log
             """
-            log_dir = Path.joinpath(Path.home(), 'logs')
+            log_dir = Path('/usr/src/app/logs')
             if not log_dir.exists():
                 log_dir.mkdir()
             return Path.joinpath(log_dir, 'namecheap-updater.log')
@@ -68,32 +68,47 @@ class Updater:
             log.addHandler(file_handler)
         return log
 
+    def _send_req(self, domain: str, ip_addr: str) -> None:
+        """
+        Sends a GET request
+        :param domain:
+        :param ip_addr: str
+        :return:
+        """
+        update_url = f'{self.nc_url}/update?host=@' \
+                     f'&domain={domain}' \
+                     f'&password={environ["dyn-password"]}' \
+                     f'&ip={ip_addr}'
+        resp = get(update_url)
+        self.logger.info(f'Request status code: {resp.status_code} Response text: {resp.text}')
+
     def run(self) -> None:
         """
         Gets ip address, runs update subroutine
         """
         my_ip_addr = self._my_ip
         if not my_ip_addr:
-            msg = 'Unable to fetch ip address'
-            self.logger.log(logging.ERROR, msg)
+            msg = 'Unable to fetch ip address!  Connectivity issues and/or ipify.com down!'
+            self.logger.error(msg)
             send_message('Namecheap update process failure', msg)
             return print(msg)
+        else:
+            for domain in self.domains:
+                self._send_req(domain, my_ip_addr)
+
         while True:
             if my_ip_addr == self._my_ip:
+                msg = 'IP address the same, sleeping.'
+                self.logger.info(msg)
+                print(msg)
                 sleep(600)
                 my_ip_addr = self._my_ip
             else:
-                timestamp = datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S')
                 my_ip_addr = self._my_ip
-                msg = f'{timestamp} Changed IP to {my_ip_addr}'
-                self.logger.log(logging.INFO, msg)
+                msg = f'IP address changed to to {my_ip_addr}'
+                self.logger.info(msg)
                 print(msg)
                 send_message('DynDNS IP address change', msg)
-
-                for url in self.domains:
-                    update_url = f'{self.nc_url}/update?host=@' \
-                                 f'&domain={url}' \
-                                 f'&password={environ["dyn-password"]}' \
-                                 f'&ip={my_ip_addr}'
-                    resp = get(update_url)
+                for domain in self.domains:
+                    self._send_req(domain, my_ip_addr)
 

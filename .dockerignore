@@ -1,0 +1,10 @@
+# Env variables
+.env
+domains.txt
+
+# Build and run scripts
+build-image.sh
+run.sh
+
+# Misc
+.gitignore

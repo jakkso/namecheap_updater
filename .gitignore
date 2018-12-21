@@ -1,2 +1,4 @@
-
 .env
+logs/
+domains.txt
+update.sh
