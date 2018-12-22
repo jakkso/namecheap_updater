@@ -83,7 +83,8 @@ class Updater:
 
     def run(self) -> None:
         """
-
+        Gets IP every 5min, if the IP is different than the original IP, sends request to namecheap's DynDNS systems
+        to update DNS records correctly.
         """
         self._logger_setup()
         for _ in range(3):
@@ -102,7 +103,6 @@ class Updater:
             old_ip = self.ip
             new_ip = self.get_ip()
             if old_ip != new_ip:
-                # Requests must be sent.
                 successes = 0
                 failures = []
                 for domain in self.domains:
@@ -118,11 +118,10 @@ class Updater:
                         failures.append(msg)
                         self.logger.error(msg)
                 if successes == len(self.domains):
-                    msg = f'IP address change for domains: {" ".join(self.domains)}\nsuccessful updated to {new_ip}'
+                    msg = f'IP address change for domains: {" ".join(self.domains)}\nsuccessful updated to {new_ip}.'
                     send_message('Namecheap DynDNS IP address change successful', msg)
                     self.ip = new_ip
                 else:
-
                     msg = f'Namecheap DynDNS IP address change failed!\n' + "\n".join(failures)
                     send_message('Namecheap DynDNS IP address change Failure!', msg)
             else:
