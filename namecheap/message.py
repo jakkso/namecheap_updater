@@ -1,5 +1,5 @@
 """
-Contains implementation of class that sends email messages
+Contains implementation of function that sends email messages
 """
 
 from email.mime.multipart import MIMEMultipart
@@ -10,7 +10,7 @@ import smtplib
 
 def send_message(subject: str, message: str) -> None:
     """
-    Sends error message
+    Sends email message
     :param subject:
     :param message:
     :return:
