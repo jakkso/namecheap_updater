@@ -2,3 +2,5 @@
 logs/
 domains.txt
 update.sh
+build-image.sh
+run.sh
