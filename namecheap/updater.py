@@ -39,7 +39,8 @@ class Updater:
             if environ.get(var) is None:
                 raise AttributeError(f'Environmental variable `{var}` not set')
 
-    def get_ip(self) -> str:
+    @staticmethod
+    def get_ip() -> str:
         """
         Gets this computer's external IP address via api call to ipify.com
         """
@@ -71,7 +72,8 @@ class Updater:
             log.addHandler(file_handler)
         self.logger = log
 
-    def _send_request(self, domain: str, ip: str) -> Response:
+    @staticmethod
+    def _send_request(domain: str, ip: str) -> Response:
         """
         Returns response to get request sent to the update URL
         :param domain: string of domain for which to request an update
@@ -132,8 +134,8 @@ class Updater:
 def xml_errors(xml: str) -> bool:
     """
     Parses XML, determines if the xml response contains errors.
+    False if there are no errors, True if there are.
     :param xml: string, xml response returned from namecheap dns update request
-    :return:
     """
     for child in Et.fromstring(xml):
         if child.tag == 'ErrCount':
